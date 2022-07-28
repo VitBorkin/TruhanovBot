@@ -21,19 +21,17 @@ class FSMAdmin(StatesGroup):
 async def make_changes_command(message: types.Message):
     global ID
     ID = message.from_user.id
-    await bot.send_message(message.from_user.id, 'Что хозяин надо???', reply_markup=admin_kb.button_case_admin)
+    await bot.send_message(message.from_user.id, 'Авторизация прошла успешно. Бот открыт для редактирования.', reply_markup=admin_kb.button_case_admin)
     await message.delete()
 
 # Начало диалога загрузки нового пункта меню
 # @dp.message_handler(commands='Добавить', state=None)
-#TODO Переписать, чтобы команда /Добавить отображалась как текс с эмоджиком и так же распознавалась телеграмом
 async def cm_start(message: types.Message):
     if message.from_user.id == ID:
         await FSMAdmin.photo.set()
-        await message.reply('Загрузите фото товара')
+        await message.reply('Загрузите фото товара', reply_markup=admin_kb.cancel_adding)
 
 # Выход из состояния ввода данных в базу на любом этапе, посредством ввода слова "отмена"
-# TODO Сделать кнопку отмена, которая будет висеть пока вводятся данные, вместо необходимости вводить сообщение "отмена"
 # @dp.message_handler(state="*", commands='отмена')
 # @dp.message_handler(Text(equals='отмена', ignore_case=True), state="*")
 async def cancel_handler(message: types.Message, state=FSMContext):
@@ -42,7 +40,7 @@ async def cancel_handler(message: types.Message, state=FSMContext):
         if current_state is None:
             return
         await state.finish()
-        await message.reply('ОК')
+        await message.reply('ОК', reply_markup=admin_kb.button_case_admin)
 
 # Ловим первый ответ - фотографию товара и пишем словарь
 # @dp.message_handler(content_types=['photo'], state=FSMAdmin.photo)
@@ -80,7 +78,7 @@ async def load_price(message: types.Message, state: FSMContext):
 
         await sqlite_db.sql_add_command(state)
         await state.finish()
-        await bot.send_message(message.from_user.id, 'Новые записи были успешно внесены в базу данных!!!')
+        await bot.send_message(message.from_user.id, 'Новая запись была успешно добавлена в базу данных!!!', reply_markup=admin_kb.button_case_admin)
 
 
 # Инлайн кнопка на удаление записи в базе данных
@@ -104,12 +102,12 @@ async def delete_item(message: types.Message):
 
 # Регистрируем хендлеры
 def register_handlers_admin(dp: Dispatcher):
+    dp.register_message_handler(cm_start, commands=['Добавить'], state=None)
+    dp.register_message_handler(cancel_handler, state="*", commands='отмена')
     dp.register_message_handler(cancel_handler, Text(equals='отмена', ignore_case=True), state="*")
     dp.register_message_handler(load_photo, content_types=['photo'], state=FSMAdmin.photo)
     dp.register_message_handler(load_name, state=FSMAdmin.name)
     dp.register_message_handler(load_description, state=FSMAdmin.description)
     dp.register_message_handler(load_price, state=FSMAdmin.price)
     dp.register_message_handler(make_changes_command, commands=['moderator'], is_chat_admin=True)
-    dp.register_message_handler(cancel_handler, state="*", commands='отмена')
-    dp.register_message_handler(cm_start, commands=['Добавить'], state=None)
     dp.register_message_handler(delete_item, commands='Редактировать')

@@ -27,5 +27,3 @@ async def sql_delete_command(data):
     cur.execute('DELETE FROM menu WHERE name == ?', (data,))
     base.commit()
 
-
-#TODO Добавить базу данных пользователей, ФИО, адрес доставки, № и реквизиты платёжной карты, дату регистрации, историю покупок

@@ -1,10 +1,12 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 
-# Кнопки клавиатуры панели администратора
-button_load = KeyboardButton('/Добавить') # Добавить товар - ссылка в файле admin.py функция cm_start
-button_delete = KeyboardButton('/Редактировать') #/Редактировать  - ссылка в файле admin.py функция delete_item
+# Кнопки клавиатуры панели администратора, обработчики в admin.py
+button_load = KeyboardButton('/Добавить')
+button_delete = KeyboardButton('/Редактировать')
 button_exit = KeyboardButton('/Выйти')
-#TODO Подключить кнопку /Выйти, чтобы нажатием можно было выйти из панели администратора
+cancel_button = KeyboardButton('/Отмена')
+
 
 button_case_admin = ReplyKeyboardMarkup(resize_keyboard=True).add(button_load, button_delete).add(button_exit)
+cancel_adding = ReplyKeyboardMarkup(resize_keyboard=True).add(cancel_button)
