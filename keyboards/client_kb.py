@@ -10,14 +10,15 @@ b3 = KeyboardButton('/Меню')
 
 kb_client = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False)
 
-kb_client.add(b1).add(b2).insert(b3)#.row(b4, b5) # add - кнопка, размером в строку, insert - кнопка на той же сроке, если влазит, row - кнопки на одной строке
+kb_client.add(b3).add(b2, b1)#.row(b4, b5)
+# add - кнопка, размером в строку, insert - кнопка на той же сроке, если влазит, row - кнопки на одной строке
 # kb_client.row(b1, b2, b3)
 
 
-# Инлайн клавиатура к заказу
+# Инлайн клавиатура к заказам
 menu_panel = InlineKeyboardMarkup(row_width=2)
-buy = InlineKeyboardButton(text='🛒Заказать', callback_data='pay')
-describe = InlineKeyboardButton(text='🧾Описание', callback_data='')
+buy = InlineKeyboardButton(text='🛒Заказать', callback_data='/buy')
+describe = InlineKeyboardButton(text='🧾Описание', callback_data='describe')
 
 menu_panel.add(describe, buy)
 

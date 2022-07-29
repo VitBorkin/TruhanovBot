@@ -1,9 +1,10 @@
 # Adding abylity for payments from TelegramBot
 
-from aiogram import types
+from aiogram import types, Dispatcher
 from aiogram.types.message import ContentTypes
 from aiogram.utils import executor
 from create_bot import bot
+
 from config import PAYMENTS_PROVIDER_TOKEN
 
 
@@ -20,15 +21,7 @@ shipping_options = [
     ]
 
 
-@dp.message_handler(commands=['start'])
-async def cmd_start(message: types.Message):
-    await bot.send_message(message.chat.id,
-                           "Hello, I'm the demo merchant bot."
-                           " I can sell you a Time Machine."
-                           " Use /buy to order one, /terms for Terms and Conditions")
-
-
-@dp.message_handler(commands=['terms'])
+# @dp.message_handler(commands=['terms'])
 async def cmd_terms(message: types.Message):
     await bot.send_message(message.chat.id,
                            'Thank you for shopping with our demo bot. We hope you like your new time machine!\n'
@@ -41,7 +34,7 @@ async def cmd_terms(message: types.Message):
                            ' to you immediately.')
 
 
-@dp.message_handler(commands=['buy'])
+# @dp.message_handler(commands=['buy'])
 async def cmd_buy(message: types.Message):
     await bot.send_message(message.chat.id,
                            "Real cards won't work with me, no money will be debited from your account."
@@ -64,14 +57,14 @@ async def cmd_buy(message: types.Message):
                            payload='HAPPY FRIDAYS COUPON')
 
 
-@dp.shipping_query_handler(lambda query: True)
+# @dp.shipping_query_handler(lambda query: True)
 async def shipping(shipping_query: types.ShippingQuery):
     await bot.answer_shipping_query(shipping_query.id, ok=True, shipping_options=shipping_options,
                                     error_message='Oh, seems like our Dog couriers are having a lunch right now.'
                                                   ' Try again later!')
 
 
-@dp.pre_checkout_query_handler(lambda query: True)
+# @dp.pre_checkout_query_handler(lambda query: True)
 async def checkout(pre_checkout_query: types.PreCheckoutQuery):
     await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True,
                                         error_message="Aliens tried to steal your card's CVV,"
@@ -79,7 +72,7 @@ async def checkout(pre_checkout_query: types.PreCheckoutQuery):
                                                       " try to pay again in a few minutes, we need a small rest.")
 
 
-@dp.message_handler(content_types=ContentTypes.SUCCESSFUL_PAYMENT)
+# @dp.message_handler(content_types=ContentTypes.SUCCESSFUL_PAYMENT)
 async def got_payment(message: types.Message):
     await bot.send_message(message.chat.id,
                            'Hoooooray! Thanks for payment! We will proceed your order for `{} {}`'
@@ -87,3 +80,10 @@ async def got_payment(message: types.Message):
                            '\n\nUse /buy again to get a Time Machine for your friend!'.format(
                                message.successful_payment.total_amount / 100, message.successful_payment.currency),
                            parse_mode='Markdown')
+
+def register_handlers_payment(dp: Dispatcher):
+    dp.register_message_handler(cmd_buy, text=['buy'])
+    dp.register_message_handler(shipping)
+    dp.register_message_handler(checkout)
+    dp.register_message_handler(got_payment, content_types=ContentTypes.SUCCESSFUL_PAYMENT)
+

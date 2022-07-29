@@ -91,12 +91,15 @@ async def del_callback_run(callback_query: types.CallbackQuery):
 #@dp.message_handler(commands='Редактировать')
 async def delete_item(message: types.Message):
     if message.from_user.id == ID:
-        await bot.send_message(message.from_user.id, 'ПЕРЕЧЕНЬ ТОВАРОВ В ТЕКУЩЕЙ БАЗЕ ДАННЫХ:')
+        await bot.send_message(message.from_user.id, 'ТЕКУЩИЕ ТОВАРЫ В БАЗЕ:')
         read = await sqlite_db.sql_read2()
         for ret in read:
-            await bot.send_photo(message.from_user.id, ret[0], f'{ret[1]}\nОписание: {ret[2]}\nЦена {ret[-1]} рублей.')
-            await bot.send_message(message.from_user.id, text='-----------------', reply_markup=InlineKeyboardMarkup(). \
-                                   add(InlineKeyboardButton(f'Удалить {ret[1]}', callback_data=f'del {ret[1]}')))
+            await bot.send_photo(message.from_user.id, ret[0],
+                                 f'<b>{ret[1]}</b>\nОписание: <i>{ret[2]}</i>\n<u>Цена {ret[-1]} рублей.</u>',
+                                 parse_mode=types.ParseMode.HTML)
+            await bot.send_message(message.from_user.id, text='👇👇👇👇👇👇👇👇', reply_markup=InlineKeyboardMarkup().
+                                   add(InlineKeyboardButton(f'Удалить "{ret[1]}"', callback_data=f'del {ret[1]}')))
+
 
 
 

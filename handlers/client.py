@@ -1,7 +1,6 @@
 from aiogram import types, Dispatcher
 from create_bot import dp, bot
 from keyboards import kb_client
-from aiogram.types import ReplyKeyboardRemove
 from data_base import sqlite_db
 
 
@@ -9,7 +8,7 @@ from data_base import sqlite_db
 # @dp.message_handler(commands=['start', 'help', 'Выйти'])
 async def command_start(message: types.Message):
     try:
-        await bot.send_message(message.from_user.id, 'Добро пожаловать в ЧатБот интернет магазина "БестФакер", что вы хотели узнать', reply_markup=kb_client)
+        await bot.send_message(message.from_user.id, 'Добро пожаловать в ЧатБот интернет магазина "БестФакер", что вы хотели узнать?', reply_markup=kb_client)
         await message.delete()
     except:
         await message.reply('Общение с ботом через ЛС, напишите ему:\nhttps://t.me/Truhanov_Bot')
@@ -18,17 +17,23 @@ async def command_start(message: types.Message):
 # Ответ на команду /Режим_работы
 # @dp.message_handler(commands=['Режим_работы'])
 async def shop_open(message: types.Message):
-    await bot.send_message(message.from_user.id, 'Вт-Чт с 9:00 до 20:00, Пт-Сб с 10:00 до 23:00')
+    await bot.send_message(message.from_user.id, '<b>Режим работы магазина:</b>\nВт-Чт - с 9:00 до 20:00'
+                                                 '\nПт-Сб - с 10:00 до 23:00', parse_mode=types.ParseMode.HTML)
+    await message.delete()
 
 # Ответ на команду /Расположение
 # @dp.message_handler(commands=['Расположение'])
 async def shop_place(message: types.Message):
-    await bot.send_message(message.from_user.id, 'ул. Колбасная 15, Гомель')#, reply_markup=ReplyKeyboardRemove()) # Удаляет кнопочный интерфейс пользователя
+    await bot.send_message(message.from_user.id, '<b>Наши адреса:</b>\n246006, г.Гомель,ул. Колбасная, 15'
+                                                 '\nТел.: +375 29 605-48-71', parse_mode=types.ParseMode.HTML)
+    await message.delete()
 
 # Ответ на команду /Меню
 # @dp.message_handler(commands=['Меню'])
 async def shop_menu(message: types.Message):
     await sqlite_db.sql_read(message)
+    await message.delete()
+
 
 
 def register_handlers_client(dp: Dispatcher):
